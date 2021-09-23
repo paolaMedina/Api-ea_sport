@@ -20,6 +20,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 Route::group(['prefix' => 'v1',], function () {
     Route::get('/player/load', 'PlayerController@loadData');
+    Route::post('/team', 'ClubController@findTeam');
 });
 
 // Route::group(
