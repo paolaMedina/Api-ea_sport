@@ -12,31 +12,40 @@ use Exception;
 class ClubController extends ApiController
 {
 
-    private $clubRepository, $countryRepository, $playerRepository;
+    private $clubRepository;
 
     public function __construct(
-        ClubRepository $clubRepository,
-        CountryRepository $countryRepository,
-        PlayerRepository $playerRepository
+        ClubRepository $clubRepository
     ) {
         $this->clubRepository = $clubRepository;
-        $this->countryRepository = $countryRepository;
-        $this->playerRepository = $playerRepository;
     }
 
     public function findTeam(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string',
-        ]);
         try {
-
+            $result = [];
+            $request->validate([
+                'name' => 'required|string',
+            ]);
+            !$request->page && $request->request->add(['page' => 1]);
             $name = $request->name;
-            $page = $request->page ? (int)$request->page : 1;
-            $players = $this->clubRepository->findForClub($name, $page);
 
-            return $this->showAll($players);
+            $players = $this->clubRepository->findForClub($name);
+
+            foreach ($players as $player) {
+                array_push(
+                    $result,
+                    [
+                        "name" => $player->name,
+                        "position" => $player->position,
+                        "nation"  => $player->nation->name
+                    ]
+                );
+            };
+
+            return $this->showAll(collect($result));
         } catch (Exception $e) {
+            return $this->errorResponse('Se presento un error', 500);
         }
     }
 }

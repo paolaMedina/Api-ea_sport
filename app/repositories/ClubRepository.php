@@ -21,25 +21,15 @@ class ClubRepository extends BaseRepository
         return $club;
     }
 
-    public function findForClub(string $club, int $page)
+    public function findForClub(string $club)
     {
-        $result = [];
         $club = $this->getModel()
             ->where('name', 'ilike', '%' . $club . '%')
             ->first();
 
         $players = $club->players;
 
-        foreach ($players as $player) {
-            array_push(
-                $result,
-                [
-                    "name" => $player->name,
-                    "position" => $player->position,
-                    "nation"  => $player->nation->name
-                ]
-            );
-        };
-        return collect($result);
+
+        return $players;
     }
 }
