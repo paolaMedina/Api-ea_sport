@@ -19,4 +19,14 @@ class PlayerRepository extends BaseRepository
         $acount = $this->getModel()->firstOrCreate(['name' =>  $data['name']], $data);
         return $acount;
     }
+
+    public function find(string $name, string $order)
+    {
+        $players = $this->getModel()
+            ->with(['nation:id,name', 'club:id,name'])
+            ->where('name', 'ilike', '%' . $name . '%')
+            ->orderBy('name', $order)
+            ->get();
+        return $players;
+    }
 }
